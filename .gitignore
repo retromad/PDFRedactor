@@ -1,0 +1,12 @@
+# Build artifacts
+_win_stage/
+dist_windows/
+build/
+dist/
+__pycache__/
+*.pyc
+*.pyo
+*.spec
+
+# macOS
+.DS_Store
