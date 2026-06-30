@@ -331,6 +331,7 @@ class PDFRedactorApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("PDF Redactor")
+        self._set_window_icon()
         self.resizable(True, True)
         self.minsize(700, 500)
 
@@ -389,6 +390,35 @@ class PDFRedactorApp(tk.Tk):
         self.bind_all("<Button-4>",   self._on_root_wheel)
         self.bind_all("<Button-5>",   self._on_root_wheel)
         self.bind_all("<TouchpadScroll>", self._on_root_touchpad)
+
+    def _set_window_icon(self):
+        """Set the taskbar/dock icon from a bundled icon file (best effort)."""
+        bases = []
+        if getattr(sys, "frozen", False) and getattr(sys, "_MEIPASS", None):
+            bases.append(Path(sys._MEIPASS))
+        if sys.argv[0]:
+            bases.append(Path(sys.argv[0]).resolve().parent)
+        bases.append(Path(__file__).resolve().parent)
+        # Windows: .ico via iconbitmap renders crisply in the taskbar
+        if sys.platform == "win32":
+            for base in bases:
+                ico = base / "icon.ico"
+                if ico.exists():
+                    try:
+                        self.iconbitmap(str(ico))
+                        return
+                    except Exception:
+                        pass
+        # Cross-platform: a PNG via iconphoto
+        for base in bases:
+            png = base / "icon.png"
+            if png.exists():
+                try:
+                    self._app_icon = tk.PhotoImage(file=str(png))
+                    self.iconphoto(True, self._app_icon)
+                    return
+                except Exception:
+                    pass
 
     def _build_ui(self):
         # Two-column layout: controls left, PDF previews right.

@@ -199,6 +199,10 @@ InstallDir    "${{INST_DIR}}"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 
+; Custom icon for the installer and uninstaller executables
+Icon          "{staging_dir}\\icon.ico"
+UninstallIcon "{staging_dir}\\icon.ico"
+
 ; ── Pages ─────────────────────────────────────────────────────────────────────
 Page instfiles
 
@@ -207,12 +211,12 @@ Section "Install"
   SetOutPath "$INSTDIR"
   File /r "{staging_dir}\\*.*"
 
-  ; Desktop shortcut (pythonw.exe = no console window)
+  ; Desktop shortcut (pythonw.exe = no console window; custom icon.ico)
   CreateShortcut \\
     "$DESKTOP\\PDF Redactor.lnk" \\
     "$INSTDIR\\python\\pythonw.exe" \\
     '"$INSTDIR\\pdf_redactor_gui.py"' \\
-    "$INSTDIR\\python\\pythonw.exe" 0 \\
+    "$INSTDIR\\icon.ico" 0 \\
     SW_SHOWNORMAL "" "PDF Redactor"
 
   ; Start Menu shortcuts
@@ -221,7 +225,7 @@ Section "Install"
     "$SMPROGRAMS\\PDF Redactor\\PDF Redactor.lnk" \\
     "$INSTDIR\\python\\pythonw.exe" \\
     '"$INSTDIR\\pdf_redactor_gui.py"' \\
-    "$INSTDIR\\python\\pythonw.exe" 0 \\
+    "$INSTDIR\\icon.ico" 0 \\
     SW_SHOWNORMAL "" "PDF Redactor"
 
   WriteUninstaller "$INSTDIR\\Uninstall.exe"
@@ -319,6 +323,12 @@ def main() -> None:
     print("\n[4/5] Staging application...")
     shutil.copy(app_source, staging_dir / "pdf_redactor_gui.py")
     print("  Copied pdf_redactor_gui.py")
+    icon_src = HERE / "icon.ico"
+    if icon_src.exists():
+        shutil.copy(icon_src, staging_dir / "icon.ico")
+        print("  Copied icon.ico")
+    else:
+        print("  WARNING: icon.ico not found — shortcuts will use the default icon")
 
     # ── 5. Compile installer ──────────────────────────────────────────────────
     print("\n[5/5] Compiling installer with NSIS...")

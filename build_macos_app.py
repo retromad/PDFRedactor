@@ -47,6 +47,8 @@ def main() -> None:
         "--clean",
         "--name", APP_NAME,
         "--osx-bundle-identifier", BUNDLE_ID,
+        "--icon", str(HERE / "icon.icns"),
+        "--add-data", f"{HERE / 'icon.png'}:.",
         "--distpath", str(DIST),
         "--workpath", str(BUILD),
         "--specpath", str(BUILD),
