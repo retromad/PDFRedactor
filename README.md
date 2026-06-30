@@ -8,10 +8,17 @@ A self-contained Windows desktop application that redacts sensitive keywords fro
 
 ## Features
 
-- **Keyword-based redaction** — load a plain-text keyword list (one per line or comma-separated) and redact every match across all pages
+- **Keyword-based redaction** — build a keyword list (one per line or comma-separated) and redact every match across all pages
+- **Editable keyword list** — type keywords directly, add them one at a time, or load and **save** a `.txt` keyword file for reuse
+- **Add keywords from the preview** — drag-select any text in the PDF preview to add it straight to the keyword list
+- **Live side-by-side preview** — view the Original and Redacted PDFs in the same window with:
+  - Synchronized scrolling and page navigation between both panels
+  - Continuous scroll that flips pages at the top/bottom edge
+  - Zoom controls (25%–500%, or Fit-to-width) and a Go-to-page box
+  - A **Pop Out** button to detach the previews into their own window — drag it to a second monitor
+- **Full-page OCR redaction** — when enabled, OCRs the entire page (not just embedded images) so text baked into **headers, logos, screenshots, and scanned pages** is detected and redacted directly in the image pixels
 - **Case-insensitive matching** — optional toggle to catch all capitalisation variants
-- **OCR redaction** — automatically detects image-only pages (scans) and embedded images within mixed-content pages, runs Tesseract OCR, and redacts matching words directly in the image pixels
-- **Multi-file batch processing** — queue multiple PDFs and process them in one run
+- **Multi-file batch processing** — queue multiple PDFs; selecting a file shows its matching original/redacted pair
 - **Progress tracking** — per-page and per-file progress bars with a live log showing redaction counts and OCR activity
 - **Custom output folder** — save redacted files alongside the originals or to a chosen directory
 - **No internet required** — fully offline after installation
@@ -27,21 +34,28 @@ The installer bundles Python 3.11, PyMuPDF, pytesseract, Pillow, and Tesseract O
 
 ## Usage
 
-1. **Keywords file** — click **Browse…** to load a `.txt` file containing the terms to redact.
-   Each term on its own line, or multiple terms comma-separated:
+1. **Keywords** — type terms directly into the keyword box (one per line), use the **Add Keyword** field, or click **Browse…** to load an existing `.txt` file. Click **Save** to write the list back to a file for reuse:
    ```
    John Smith
    john.smith@example.com
    555-1234
    ```
-2. **PDF files** — click **Add PDFs…** to queue one or more PDF files
+2. **PDF files** — click **Add PDFs…** to queue one or more PDF files. The first file is shown in the Original preview automatically
 3. **Output folder** *(optional)* — by default redacted files are saved next to the originals with a `_redacted` suffix. Click **Choose Folder…** to save them elsewhere
 4. **Options**
    - *Case-insensitive matching* — also matches `JOHN SMITH`, `john smith`, etc.
-   - *OCR image pages* — enables OCR for scanned pages and images embedded in text pages (enabled by default; requires the bundled Tesseract)
+   - *OCR image pages* — OCRs each full page so text inside images, logos, headers, and scans is redacted (enabled by default; requires the bundled Tesseract)
 5. Click **Start Redaction**
 
 Redacted PDFs are saved as `<original_name>_redacted.pdf`. The log panel shows how many text and OCR redactions were applied per file.
+
+### Preview controls
+
+- **Show Original PDF / Show Redacted PDF** — open either preview on the right side of the window
+- **Drag-select** text in a preview to add it to the keyword list
+- **‹ Prev / Next ›** and **Go to page** — navigate pages; both panels stay in sync
+- **Zoom −/+/Fit** — scale the page; the mouse wheel scrolls (and flips pages at the edges)
+- **Pop Out** — move the previews into a separate, draggable window (e.g. a second monitor)
 
 ## Building the installer (macOS)
 
