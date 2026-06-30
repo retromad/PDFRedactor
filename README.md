@@ -32,6 +32,20 @@ A self-contained Windows desktop application that redacts sensitive keywords fro
 
 The installer bundles Python 3.11, PyMuPDF, pytesseract, Pillow, and Tesseract OCR with English language data. Nothing else needs to be installed.
 
+## Installation (macOS)
+
+1. Download **PDFRedactor.dmg** from the [Releases](../../releases) page
+2. Open the `.dmg` and drag **PDF Redactor** into **Applications**
+3. First launch: right-click the app → **Open** (the app is unsigned, so Gatekeeper asks once)
+
+The `.app` bundles Python and all Python dependencies. **OCR** uses Tesseract from the system — install it once with:
+
+```bash
+brew install tesseract
+```
+
+Text redaction works without it; the OCR option is enabled automatically once Tesseract is present.
+
 ## Usage
 
 1. **Keywords** — type terms directly into the keyword box (one per line), use the **Add Keyword** field, or click **Browse…** to load an existing `.txt` file. Click **Save** to write the list back to a file for reuse:
@@ -57,16 +71,27 @@ Redacted PDFs are saved as `<original_name>_redacted.pdf`. The log panel shows h
 - **Zoom −/+/Fit** — scale the page; the mouse wheel scrolls (and flips pages at the edges)
 - **Pop Out** — move the previews into a separate, draggable window (e.g. a second monitor)
 
-## Building the installer (macOS)
+## Building the installers (from macOS)
 
-Requirements: macOS with Homebrew
+Requirements: macOS with Homebrew.
+
+**Windows installer** (`dist_windows/PDFRedactOCR_Setup.exe`):
 
 ```bash
 brew install nsis
 python3 build_windows_installer.py
 ```
 
-The script downloads all dependencies automatically (Python runtime, wheels, Tesseract) and compiles `dist_windows/PDFRedactOCR_Setup.exe`. `sevenzip` is installed via Homebrew automatically if not already present.
+The script downloads all dependencies automatically (Python runtime, wheels, Tesseract) and compiles a fully self-contained installer. `sevenzip` is installed via Homebrew automatically if not already present.
+
+**macOS app + dmg** (`dist_macos/PDF Redactor.app`, `dist_macos/PDFRedactor.dmg`):
+
+```bash
+pip install pyinstaller
+python3 build_macos_app.py
+```
+
+Produces a lightweight `.app`/`.dmg`. OCR relies on a system Tesseract (`brew install tesseract`).
 
 ## Keyword file format
 

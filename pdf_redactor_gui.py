@@ -53,29 +53,40 @@ _OCR_PSM: str = "11"
 
 def _find_tesseract() -> Optional[str]:
     """
-    Look for tesseract.exe in this order:
-      1. Bundled alongside this script (installer puts it in tesseract/ next to us)
+    Look for the tesseract binary in this order:
+      1. Bundled alongside this script / inside a frozen app bundle
       2. System PATH
-      3. Common Windows installation paths
+      3. Common Windows / macOS (Homebrew) installation paths
     """
-    # Derive the directory this script lives in — works both from shortcut
-    # (sys.argv[0] = full path to .py) and direct execution (__file__)
+    # Directories to search for a bundled copy. Works from a .py shortcut
+    # (sys.argv[0]), direct execution (__file__), and a PyInstaller bundle
+    # (sys._MEIPASS / next to the frozen executable).
     candidates = []
+    if getattr(sys, "frozen", False):
+        meipass = getattr(sys, "_MEIPASS", None)
+        if meipass:
+            candidates.append(Path(meipass))
+        candidates.append(Path(sys.executable).resolve().parent)
     if sys.argv[0]:
         candidates.append(Path(sys.argv[0]).resolve().parent)
     candidates.append(Path(__file__).resolve().parent)
 
-    for script_dir in candidates:
-        bundled = script_dir / "tesseract" / "tesseract.exe"
-        if bundled.exists():
-            return str(bundled)
+    for base in candidates:
+        for name in ("tesseract.exe", "tesseract"):
+            bundled = base / "tesseract" / name
+            if bundled.exists():
+                return str(bundled)
 
     if shutil.which("tesseract"):
         return shutil.which("tesseract")
 
+    # GUI apps launched from Finder get a minimal PATH that excludes Homebrew,
+    # so check the standard install locations explicitly.
     for p in [
         r"C:\Program Files\Tesseract-OCR\tesseract.exe",
         r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        "/opt/homebrew/bin/tesseract",   # macOS Apple Silicon (Homebrew)
+        "/usr/local/bin/tesseract",      # macOS Intel (Homebrew) / Linux
     ]:
         if Path(p).exists():
             return p
